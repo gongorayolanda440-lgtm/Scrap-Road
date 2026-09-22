@@ -567,6 +567,10 @@ function downloadFile(filename, content, mime){
 }
 function exportCSV(){
   const rows = filteredTrips();
+  if(!rows.length){
+    alert(`No hay viajes para exportar con este filtro (${periodLabel()}${ui.fDriver||ui.fMat||ui.fStatus ? ', con los filtros de chofer/material/estado activos' : ''}). Cambia el periodo o los filtros e inténtalo de nuevo.`);
+    return;
+  }
   const head = ['ID','Fecha','Chofer','Camión','Material','Origen','Destino planificado','Destino real','Ton estimadas','Ticket origen','Ton origen','Ticket destino','Ton destino','Diferencia %','Estado','Notas'];
   const q = v => '"'+String(v??'').replace(/"/g,'""')+'"';
   const lines = [head.map(q).join(',')].concat(rows.map(t=>[shortCode(t.id),t.date,driverName(t.driverId),truckName(t.truckId),t.material,t.originName,t.destName,t.destActual,t.estTons,t.originTicket,t.originTons,t.destTicket,t.destTons,diffPct(t)==null?'':Math.round(diffPct(t)*100)/100,STATUS[t.status][0],t.notes].map(q).join(',')));
