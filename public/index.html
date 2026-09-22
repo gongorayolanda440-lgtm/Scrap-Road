@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ScrapRoute Despacho</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230e6f5c'/%3E%3Ctext x='50' y='68' font-size='48' font-family='Arial,sans-serif' font-weight='800' fill='white' text-anchor='middle'%3ESR%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700;800&display=swap">
+<style>
+:root{
+  --bg:#f4f6f4; --surface:#ffffff; --surface-2:#eaf0ec; --border:#d7ddd8;
+  --ink:#16211d; --muted:#5c6b63;
+  --accent:#0e6f5c; --accent-ink:#ffffff; --accent-soft:#e2f2ec;
+  --info:#1c5fa8; --info-soft:#e4eefb;
+  --warn:#a15c07; --warn-soft:#fbeed9;
+  --ok:#1a7a3e; --ok-soft:#e2f5e7;
+  --bad:#b3261e; --bad-soft:#fbe7e5;
+  --chart:#2a9d8a;
+  --shadow:0 1px 2px rgba(20,30,25,.06), 0 1px 1px rgba(20,30,25,.04);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0e1512; --surface:#151f1b; --surface-2:#1b2622; --border:#2a3a34;
+    --ink:#e8f0ec; --muted:#93a69c;
+    --accent:#3ecdae; --accent-ink:#062821; --accent-soft:#163a32;
+    --info:#7fb6f2; --info-soft:#16283c;
+    --warn:#f0b35a; --warn-soft:#3a2a12;
+    --ok:#6fdb95; --ok-soft:#123425;
+    --bad:#ff8f86; --bad-soft:#3d1e1b;
+    --chart:#3ecdae;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 Barlow,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-inline:16px;padding-block:14px 40px}
+h1,h2,h3,h4{margin:0;line-height:1.15;font-family:"Barlow Semi Condensed",Barlow,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+img{max-width:100%}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding-block:2px 10px;margin-inline:-16px;padding-inline:16px;border-bottom:1px solid var(--border)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:8px}
+.mark{width:30px;height:30px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:"Barlow Semi Condensed";font-weight:800;font-size:15px;flex:none}
+.wordmark{font-family:"Barlow Semi Condensed";font-weight:800;font-size:19px;letter-spacing:.2px;text-transform:uppercase}
+.wordmark b{color:var(--accent)}
+nav{display:flex;gap:2px;flex-wrap:wrap}
+nav button{background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:600;font-size:14px}
+nav button:hover{background:var(--surface-2)}
+nav button[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.spacer{flex:1}
+.live{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+.live.off .dot{background:var(--warn)}
+@media (prefers-reduced-motion:no-preference){.dot.pulse{animation:pulse 1.8s ease-in-out infinite}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+main{padding-block:16px}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.two{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.card h3{font-size:16px;margin-bottom:10px;font-weight:700}
+.card .sub{color:var(--muted);font-size:13px;margin:-6px 0 10px}
+.kpi .n{font-size:29px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.kpi .l{color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.3px;font-weight:600}
+.kpi .s{font-size:13px;color:var(--muted);margin-top:4px}
+.meter{height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:8px;border:1px solid var(--border)}
+.meter i{display:block;height:100%;background:var(--chart)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--ink)}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--bad)}
+.btn.small{padding:4px 8px;font-size:13px}
+.btn.big{padding:15px 16px;font-size:16px;width:100%;font-family:"Barlow Semi Condensed";font-weight:700;letter-spacing:.2px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--muted);font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.s-asignado{background:var(--info-soft);color:var(--info)}
+.s-a_origen{background:var(--warn-soft);color:var(--warn)}
+.s-cargado{background:var(--warn-soft);color:var(--warn)}
+.s-descargado{background:var(--ok-soft);color:var(--ok)}
+.s-cancelado{background:var(--bad-soft);color:var(--bad)}
+.hbar{display:grid;grid-template-columns:130px 1fr 78px;gap:8px;align-items:center;margin:6px 0;font-size:14px}
+.hbar .t{height:14px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.hbar .t i{display:block;height:100%;background:var(--chart);border-radius:4px}
+.hbar .v{text-align:right;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.alert{padding:8px 10px;border-radius:8px;margin:6px 0;font-size:14px;background:var(--warn-soft);color:var(--warn)}
+.alert.bad{background:var(--bad-soft);color:var(--bad)}
+.alert.info{background:var(--info-soft);color:var(--info)}
+.empty{color:var(--muted);padding:10px 0}
+.truck{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.truck:last-child{border-bottom:0}
+label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink)}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+dialog{border:1px solid var(--border);border-radius:14px;padding:18px;width:min(520px,94vw);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(10,15,12,.5)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row.end{justify-content:flex-end;margin-top:16px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.formerr{color:var(--bad);font-size:13px;margin-top:8px;min-height:1em}
+.phone{max-width:420px;margin:0 auto}
+.phone .head{background:var(--accent);color:var(--accent-ink);padding:14px 16px;border-radius:14px 14px 0 0}
+.phone .head select{background:rgba(255,255,255,.95);color:#111;margin-top:6px}
+.phone .body{background:var(--surface-2);border:1px solid var(--border);border-top:0;border-radius:0 0 14px 14px;padding:12px}
+.job{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+.job h4{margin:0 0 4px;font-size:17px}
+.stop{display:flex;gap:10px;margin:10px 0;align-items:flex-start}
+.dotnum{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.stop a{color:var(--info);font-size:13px}
+.steps{display:flex;gap:4px;margin:10px 0}
+.steps i{flex:1;height:6px;border-radius:99px;background:var(--border)}
+.steps i.on{background:var(--chart)}
+.note{font-size:13px;color:var(--muted)}
+.intro{background:var(--accent-soft);color:var(--ink);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:14px}
+.helpcard{border-left:3px solid var(--accent)}
+#loginScreen{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:50;padding:16px}
+#loginScreen .card{width:min(360px,100%)}
+@media (max-width:640px){
+  .hbar{grid-template-columns:96px 1fr 60px}
+  .two-col{grid-template-columns:1fr}
+  .kpi .n{font-size:25px}
+}
+@media print{
+  header.top,.toolbar,.no-print,.btn,#loginScreen{display:none !important}
+  .card{border:1px solid #bbb;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" hidden>
+  <div class="card">
+    <h2 style="margin-bottom:4px">ScrapRoute</h2>
+    <p class="note" style="margin:0 0 14px">Escribe la contraseña del equipo para entrar.</p>
+    <form id="loginForm">
+      <label for="pw">Contraseña</label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <div class="formerr" id="loginErr"></div>
+      <button class="btn primary big" style="margin-top:12px" type="submit">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<header class="top">
+  <div class="wrap bar">
+    <div class="brand"><div class="mark">SR</div><div class="wordmark">Scrap<b>Route</b></div></div>
+    <nav id="nav" aria-label="Secciones">
+      <button data-tab="panel">Panel</button>
+      <button data-tab="viajes">Viajes</button>
+      <button data-tab="chofer">App del chofer</button>
+      <button data-tab="catalogos">Catálogos</button>
+    </nav>
+    <div class="spacer"></div>
+    <span class="live off" id="liveBadge"><span class="dot pulse"></span><span id="liveTxt">Conectando…</span></span>
+    <button class="btn small no-print" id="logoutBtn" hidden>Salir</button>
+  </div>
+</header>
+<main class="wrap" id="app"></main>
+<dialog id="dlg"></dialog>
+<datalist id="dl-places"></datalist>
+
+<script>
+"use strict";
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const iso = d => { const z = new Date(d.getTime() - d.getTimezoneOffset()*60000); return z.toISOString().slice(0,10); };
+const today = () => iso(new Date());
+const addDays = (s,n) => { const d = new Date(s+'T12:00:00'); d.setDate(d.getDate()+n); return iso(d); };
+const weekStart = s => { const d = new Date(s+'T12:00:00'); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return iso(d); };
+const monthStart = s => s.slice(0,8)+'01';
+const fmt = n => (n==null || n==='' || isNaN(n)) ? '—' : (Math.round(Number(n)*100)/100).toLocaleString('en-US');
+const fmtDate = s => { if(!s) return '—'; const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; };
+const nowISO = () => new Date().toISOString();
+const shortCode = id => 'V-' + (id||'').replace(/^v_/,'').slice(-5).toUpperCase();
+function safeGet(k){ try{ return localStorage.getItem(k)||''; }catch(e){ return ''; } }
+function safeSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+const MATERIALS = ['Hierro pesado (HMS)','Chatarra ligera','Hierro fundido','Acero estructural','Aluminio','Cobre','Latón','Acero inoxidable','Carrocerías / autos','Mixto'];
+const STATUS = {
+  asignado:['Asignado','s-asignado'], a_origen:['Rumbo a recoger','s-a_origen'],
+  cargado:['Cargado, rumbo a descargar','s-cargado'], descargado:['Entregado','s-descargado'], cancelado:['Cancelado','s-cancelado']
+};
+const pill = st => `<span class="pill ${STATUS[st][1]}">${STATUS[st][0]}</span>`;
+
+/* ---------------- capa de datos (API propia) ---------------- */
+let state = { trucks:[], drivers:[], places:[], trips:[], goal:{weeklyTons:250} };
+let LIVE = false;
+let POLL_MS = 4000;
+let pollTimer = null;
+
+async function api(method, url, body){
+  const res = await fetch(url, {
+    method, headers: body ? {'Content-Type':'application/json'} : undefined,
+    body: body ? JSON.stringify(body) : undefined, credentials:'same-origin'
+  });
+  if(res.status === 401){ showLogin(); throw new Error('sesión requerida'); }
+  if(!res.ok){ let msg='No se pudo completar la acción.'; try{ const j = await res.json(); if(j.error) msg = j.error; }catch(e){} throw new Error(msg); }
+  const ct = res.headers.get('content-type')||'';
+  return ct.includes('application/json') ? res.json() : null;
+}
+async function loadState(){
+  try{
+    const data = await api('GET','/api/state');
+    state = data;
+    LIVE = true; setLiveBadge();
+    render();
+  }catch(e){ LIVE = false; setLiveBadge(); }
+}
+function setLiveBadge(){
+  const b = $('#liveBadge'), t = $('#liveTxt');
+  if(LIVE){ b.classList.remove('off'); t.textContent='Conectado · datos compartidos'; }
+  else { b.classList.add('off'); t.textContent='Sin conexión — reintentando…'; }
+}
+function startPolling(){
+  if(pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(()=>{
+    if(document.hidden) return;
+    if($('#dlg').open) return; // no interrumpir un formulario abierto
+    loadState();
+  }, POLL_MS);
+}
+
+/* ---------------- sesión ---------------- */
+async function checkSession(){
+  try{
+    const s = await fetch('/api/session', {credentials:'same-origin'}).then(r=>r.json());
+    if(s.needsPassword) $('#logoutBtn').hidden = false;
+    if(!s.authed){ showLogin(); return; }
+    hideLogin();
+    await loadState();
+    startPolling();
+  }catch(e){ showLogin(); }
+}
+function showLogin(){ $('#loginScreen').hidden = false; }
+function hideLogin(){ $('#loginScreen').hidden = true; }
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const pw = $('#pw').value;
+  $('#loginErr').textContent = '';
+  try{
+    const r = await fetch('/api/login', {method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin', body: JSON.stringify({password:pw})});
+    if(!r.ok){ $('#loginErr').textContent = 'Contraseña incorrecta.'; return; }
+    $('#logoutBtn').hidden = false;
+    hideLogin(); $('#pw').value='';
+    await loadState(); startPolling();
+  }catch(e){ $('#loginErr').textContent = 'No se pudo conectar con el servidor.'; }
+});
+$('#logoutBtn').addEventListener('click', async () => {
+  try{ await fetch('/api/logout', {method:'POST', credentials:'same-origin'}); }catch(e){}
+  if(pollTimer) clearInterval(pollTimer);
+  showLogin();
+});
+
+/* ---------------- estado de la interfaz (solo local, no se comparte) ---------------- */
+let ui = { tab:(location.hash||'#panel').slice(1), period:'week', from:'', to:'', fDriver:'', fMat:'', fStatus:'', driverId: safeGet('scrapRoute.myDriverId') };
+if(!['panel','viajes','chofer','catalogos'].includes(ui.tab)) ui.tab='panel';
+
+const byId = (arr,id) => arr.find(x=>x.id===id);
+const driverName = id => (byId(state.drivers,id)||{}).name || '—';
+const truckName = id => (byId(state.trucks,id)||{}).name || '—';
+const placeAddr = name => (state.places.find(p=>p.name===name)||{}).address || '';
+const delivered = t => t.status==='descargado';
+const tonsOf = t => Number(t.destTons ?? t.originTons ?? 0);
+const diffPct = t => (t.originTons>0 && t.destTons!=null) ? (t.destTons - t.originTons)/t.originTons*100 : null;
+
+/* ---------------- filtros de periodo ---------------- */
+function range(){
+  const t = today();
+  switch(ui.period){
+    case 'today': return [t,t];
+    case 'week': return [weekStart(t), addDays(weekStart(t),6)];
+    case 'month': return [monthStart(t), t];
+    case 'custom': return [ui.from||'0000-00-00', ui.to||'9999-99-99'];
+    default: return ['0000-00-00','9999-99-99'];
+  }
+}
+const inRange = t => { const [a,b] = range(); return t.date>=a && t.date<=b; };
+const periodLabel = () => ({today:'Hoy',week:'Esta semana',month:'Este mes',all:'Todo el historial',custom:`${fmtDate(ui.from)||'…'} a ${fmtDate(ui.to)||'…'}`}[ui.period]);
+function periodBar(){
+  const b = (k,l)=>`<button data-period="${k}" aria-pressed="${ui.period===k}">${l}</button>`;
+  return `<div class="toolbar no-print"><div class="seg" role="group" aria-label="Periodo">${b('today','Hoy')}${b('week','Semana')}${b('month','Mes')}${b('all','Todo')}${b('custom','Rango')}</div>
+    ${ui.period==='custom' ? `<input type="date" id="pFrom" value="${esc(ui.from)}" style="width:auto"><span>a</span><input type="date" id="pTo" value="${esc(ui.to)}" style="width:auto">`:''}</div>`;
+}
+
+/* ---------------- render raíz ---------------- */
+function render(){
+  document.querySelectorAll('#nav button').forEach(b => b.setAttribute('aria-current', b.dataset.tab===ui.tab ? 'page' : 'false'));
+  $('#dl-places').innerHTML = state.places.map(p=>`<option value="${esc(p.name)}">${esc(p.address)}</option>`).join('');
+  const fn = {panel:renderPanel, viajes:renderTrips, chofer:renderDriverApp, catalogos:renderCatalogs}[ui.tab];
+  $('#app').innerHTML = fn();
+}
+function groupSum(list, keyFn){
+  const m = new Map();
+  list.forEach(t => { const k = keyFn(t) || '—'; const o = m.get(k) || {k, trips:0, tons:0}; o.trips++; o.tons += tonsOf(t); m.set(k,o); });
+  return [...m.values()].sort((a,b)=>b.tons-a.tons);
+}
+function bars(rows, unit='t'){
+  if(!rows.length) return '<div class="empty">Sin datos en este periodo.</div>';
+  const max = Math.max(...rows.map(r=>r.tons),1);
+  return rows.map(r=>`<div class="hbar"><div title="${esc(r.k)}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.k)}</div><div class="t"><i style="width:${(r.tons/max*100).toFixed(1)}%"></i></div><div class="v">${fmt(r.tons)} ${unit}</div></div>`).join('');
+}
+function tableRows(rows, first){
+  if(!rows.length) return '<div class="empty">Sin datos en este periodo.</div>';
+  return `<div class="scroll"><table><thead><tr><th>${first}</th><th class="num">Viajes</th><th class="num">Toneladas</th><th class="num">Prom./viaje</th></tr></thead><tbody>${
+    rows.map(r=>`<tr><td>${esc(r.k)}</td><td class="num">${r.trips}</td><td class="num">${fmt(r.tons)}</td><td class="num">${fmt(r.tons/r.trips)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+/* ---------------- Panel ---------------- */
+function renderPanel(){
+  const all = state.trips;
+  const done = all.filter(t=>delivered(t) && inRange(t));
+  const tons = done.reduce((s,t)=>s+tonsOf(t),0);
+  const open = all.filter(t=>['asignado','a_origen','cargado'].includes(t.status));
+  const openTons = open.reduce((s,t)=>s+Number(t.estTons||0),0);
+  const wk0 = weekStart(today()), wk1 = addDays(wk0,6);
+  const weekTons = all.filter(t=>delivered(t) && t.date>=wk0 && t.date<=wk1).reduce((s,t)=>s+tonsOf(t),0);
+  const goal = Number(state.goal.weeklyTons)||0;
+  const pct = goal ? Math.min(100, weekTons/goal*100) : 0;
+
+  const alerts = [];
+  all.filter(t=>delivered(t) && Math.abs(diffPct(t)??0) > 2).forEach(t=>{
+    alerts.push(`<div class="alert bad">Diferencia de peso de ${fmt(diffPct(t))}% en ${shortCode(t.id)} (${fmtDate(t.date)}, ${esc(driverName(t.driverId))}): origen ${fmt(t.originTons)} t, destino ${fmt(t.destTons)} t.</div>`);
+  });
+  all.filter(t=>delivered(t) && t.destActual && t.destName && t.destActual!==t.destName).forEach(t=>{
+    alerts.push(`<div class="alert">${shortCode(t.id)}: se vació en “${esc(t.destActual)}” y no en el destino planificado “${esc(t.destName)}”.</div>`);
+  });
+  open.filter(t=>t.date<today()).forEach(t=>{
+    alerts.push(`<div class="alert bad">${shortCode(t.id)} del ${fmtDate(t.date)} sigue abierto (${STATUS[t.status][0]}).</div>`);
+  });
+
+  const trucksHtml = state.trucks.map(tr=>{
+    const cur = open.find(t=>t.truckId===tr.id && t.status!=='asignado') || open.find(t=>t.truckId===tr.id);
+    return `<div class="truck"><div><strong>${esc(tr.name)}</strong><div class="muted">${cur ? esc(driverName(cur.driverId)) : 'Sin viaje activo'}</div></div>
+      <div style="text-align:right">${cur ? pill(cur.status)+`<div class="muted" style="font-size:13px;margin-top:4px">${esc(cur.material)} · ${esc(cur.originName)} → ${esc(cur.destName)}</div>` : '<span class="pill s-descargado">Disponible</span>'}</div></div>`;
+  }).join('');
+
+  return `${periodBar()}
+  <div class="grid kpis">
+    <div class="card kpi"><div class="l">Toneladas entregadas · ${esc(periodLabel())}</div><div class="n">${fmt(tons)} t</div><div class="s">${done.length} viajes completados</div></div>
+    <div class="card kpi"><div class="l">Meta semanal</div><div class="n">${fmt(weekTons)} <span style="font-size:15px;font-weight:600" class="muted">/ ${fmt(goal)} t</span></div>
+      <div class="meter" aria-label="Avance de meta"><i style="width:${pct.toFixed(1)}%"></i></div>
+      <div class="s"><a href="#" data-act="editGoal" class="no-print">Cambiar meta</a> · ${pct.toFixed(0)}% de la meta</div></div>
+    <div class="card kpi"><div class="l">En ruta ahora</div><div class="n">${open.length}</div><div class="s">${fmt(openTons)} t estimadas por entregar</div></div>
+    <div class="card kpi"><div class="l">Promedio por viaje</div><div class="n">${done.length ? fmt(tons/done.length) : '—'} t</div><div class="s">en el periodo seleccionado</div></div>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h3>Camiones ahora</h3>${trucksHtml || '<div class="empty">Agrega camiones en Catálogos.</div>'}</div>
+    <div class="card"><h3>Alertas</h3>${alerts.join('') || '<div class="empty">Sin alertas. Todo en orden.</div>'}
+      <div class="note">Se alerta si el peso de destino difiere más de 2% del de origen, si se vació en otro lugar o si un viaje quedó abierto.</div></div>
+    <div class="card"><h3>Toneladas por material</h3>${bars(groupSum(done,t=>t.material))}</div>
+    <div class="card"><h3>Por chofer</h3>${tableRows(groupSum(done,t=>driverName(t.driverId)),'Chofer')}</div>
+    <div class="card"><h3>De dónde se trajo (origen)</h3>${bars(groupSum(done,t=>t.originName))}</div>
+    <div class="card"><h3>Dónde se vació (destino real)</h3>${bars(groupSum(done,t=>t.destActual||t.destName))}</div>
+  </div>
+  <div class="toolbar no-print" style="margin-top:16px"><button class="btn primary" data-act="print">Imprimir reporte</button><button class="btn" data-act="csv">Exportar viajes a Excel (CSV)</button></div>`;
+}
+
+/* ---------------- Viajes ---------------- */
+function filteredTrips(){
+  return state.trips.filter(t => inRange(t) && (!ui.fDriver || t.driverId===ui.fDriver) && (!ui.fMat || t.material===ui.fMat) && (!ui.fStatus || t.status===ui.fStatus))
+    .sort((a,b)=> b.date.localeCompare(a.date) || String(b.id).localeCompare(String(a.id)));
+}
+function renderTrips(){
+  const list = filteredTrips();
+  const sel = (id, opts, val, all) => `<select id="${id}" style="width:auto"><option value="">${all}</option>${opts.map(o=>`<option value="${esc(o.v)}"${o.v===val?' selected':''}>${esc(o.l)}</option>`).join('')}</select>`;
+  const totalT = list.filter(delivered).reduce((s,t)=>s+tonsOf(t),0);
+  return `${periodBar()}
+  <div class="toolbar no-print">
+    ${sel('fDriver', state.drivers.map(d=>({v:d.id,l:d.name})), ui.fDriver, 'Todos los choferes')}
+    ${sel('fMat', MATERIALS.map(m=>({v:m,l:m})), ui.fMat, 'Todos los materiales')}
+    ${sel('fStatus', Object.entries(STATUS).map(([k,v])=>({v:k,l:v[0]})), ui.fStatus, 'Todos los estados')}
+    <span class="spacer"></span>
+    <button class="btn" data-act="csv">Exportar CSV</button>
+    <button class="btn" data-act="print">Imprimir</button>
+    <button class="btn primary" data-act="newTrip">+ Nuevo viaje</button>
+  </div>
+  <div class="card"><div class="sub">${list.length} viajes · ${fmt(totalT)} t entregadas</div>
+  <div class="scroll"><table><thead><tr><th>Fecha</th><th>Chofer / camión</th><th>Material</th><th>De dónde (origen)</th><th>Dónde vació (destino)</th><th class="num">Ton origen</th><th class="num">Ton destino</th><th class="num">Dif.</th><th>Estado</th><th class="no-print"></th></tr></thead><tbody>${
+    list.map(t=>{
+      const df = diffPct(t);
+      const dest = t.destActual || t.destName;
+      const moved = t.destActual && t.destName && t.destActual!==t.destName;
+      const pin = t.geo && t.geo.dump ? ` <a href="https://www.google.com/maps?q=${t.geo.dump.lat},${t.geo.dump.lng}" target="_blank" rel="noopener" title="Ubicación GPS al descargar">📍</a>` : '';
+      return `<tr><td>${fmtDate(t.date)}<div class="muted" style="font-size:12px">${shortCode(t.id)}</div></td>
+      <td>${esc(driverName(t.driverId))}<div class="muted" style="font-size:12px">${esc(truckName(t.truckId))}</div></td>
+      <td>${esc(t.material)}</td><td>${esc(t.originName)}</td>
+      <td>${esc(dest)}${moved?` <span class="pill s-a_origen" title="Planificado: ${esc(t.destName)}">cambió</span>`:''}${pin}<div class="muted" style="font-size:12px">${t.destTicket?'Ticket '+esc(t.destTicket):''}</div></td>
+      <td class="num">${fmt(t.originTons)}<div class="muted" style="font-size:12px">est. ${fmt(t.estTons)}</div></td><td class="num">${fmt(t.destTons)}</td>
+      <td class="num" style="${df!=null&&Math.abs(df)>2?'color:var(--bad);font-weight:700':''}">${df==null?'—':(df>0?'+':'')+fmt(df)+'%'}</td>
+      <td>${pill(t.status)}</td>
+      <td class="no-print" style="white-space:nowrap"><button class="btn small" data-act="editTrip" data-id="${t.id}">Editar</button> <button class="btn small danger" data-act="delTrip" data-id="${t.id}">Borrar</button></td></tr>`;
+    }).join('') || '<tr><td colspan="10" class="empty">No hay viajes con esos filtros.</td></tr>'}</tbody></table></div></div>`;
+}
+
+/* ---------------- Catálogos ---------------- */
+function renderCatalogs(){
+  return `<div class="grid two">
+  <div class="card"><h3>Choferes</h3><div class="scroll"><table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Camión</th><th></th></tr></thead><tbody>${
+    state.drivers.map(d=>`<tr><td>${esc(d.name)}</td><td>${esc(d.phone)||'—'}</td><td>${esc(truckName(d.truckId))}</td><td style="white-space:nowrap"><button class="btn small" data-act="editDriver" data-id="${d.id}">Editar</button> <button class="btn small danger" data-act="delDriver" data-id="${d.id}">Borrar</button></td></tr>`).join('') || '<tr><td colspan="4" class="empty">Sin choferes todavía.</td></tr>'}</tbody></table></div>
+    <div class="row end"><button class="btn primary" data-act="newDriver">+ Chofer</button></div></div>
+  <div class="card"><h3>Camiones</h3><div class="scroll"><table><thead><tr><th>Nombre</th><th>Placa</th><th>Tipo</th><th></th></tr></thead><tbody>${
+    state.trucks.map(t=>`<tr><td>${esc(t.name)}</td><td>${esc(t.plate)}</td><td>${esc(t.type)}</td><td style="white-space:nowrap"><button class="btn small" data-act="editTruck" data-id="${t.id}">Editar</button> <button class="btn small danger" data-act="delTruck" data-id="${t.id}">Borrar</button></td></tr>`).join('') || '<tr><td colspan="4" class="empty">Sin camiones todavía.</td></tr>'}</tbody></table></div>
+    <div class="row end"><button class="btn primary" data-act="newTruck">+ Camión</button></div></div>
+  <div class="card" style="grid-column:1/-1"><h3>Lugares (clientes de origen y patios de destino)</h3>
+    <div class="sub">Los lugares nuevos que escriba un chofer al descargar se agregan aquí automáticamente.</div>
+    <div class="scroll"><table><thead><tr><th>Nombre</th><th>Dirección</th><th>Tipo</th><th></th></tr></thead><tbody>${
+    state.places.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.address)}</td><td>${esc(p.kind)}</td><td style="white-space:nowrap"><button class="btn small" data-act="editPlace" data-id="${p.id}">Editar</button> <button class="btn small danger" data-act="delPlace" data-id="${p.id}">Borrar</button></td></tr>`).join('') || '<tr><td colspan="4" class="empty">Sin lugares todavía.</td></tr>'}</tbody></table></div>
+    <div class="row end"><button class="btn primary" data-act="newPlace">+ Lugar</button></div></div>
+  <div class="card helpcard" style="grid-column:1/-1"><h3>Cómo compartir esto con tus choferes</h3>
+    <ol style="margin:0;padding-left:20px">
+      <li>Dales la dirección web de esta app y la contraseña compartida.</li>
+      <li>Que cada chofer la abra desde su teléfono (funciona como un sitio normal, sin instalar nada) y entre a la pestaña <strong>"App del chofer"</strong>.</li>
+      <li>En "App del chofer", cada quien elige su propio nombre una vez; su teléfono lo recordará después.</li>
+      <li>Todo lo que registre cualquier chofer aparece en el Panel y en Viajes en unos segundos.</li>
+    </ol>
+  </div>
+  <div class="card" style="grid-column:1/-1"><h3>Datos</h3>
+    <div class="sub">Los datos viven en la base de datos del servidor; no dependen del teléfono de nadie.</div>
+    <div class="toolbar" style="margin:0"><button class="btn" data-act="backup">Descargar todo (JSON, respaldo)</button>
+    <button class="btn danger" data-act="wipe">Borrar todos los datos y empezar de cero</button></div></div>
+  </div>`;
+}
+
+/* ---------------- App del chofer ---------------- */
+function renderDriverApp(){
+  if(!state.drivers.length) return '<div class="card">Primero agrega un chofer en Catálogos.</div>';
+  if(!byId(state.drivers, ui.driverId)) ui.driverId = state.drivers[0].id;
+  const mine = state.trips.filter(t=>t.driverId===ui.driverId);
+  const active = mine.filter(t=>['asignado','a_origen','cargado'].includes(t.status)).sort((a,b)=>a.date.localeCompare(b.date));
+  const doneToday = mine.filter(t=>delivered(t) && t.date===today());
+  const tonsToday = doneToday.reduce((s,t)=>s+tonsOf(t),0);
+  const stepIdx = {asignado:0,a_origen:1,cargado:2,descargado:3};
+  const nav = name => { const a = placeAddr(name) || name; return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(a)}`; };
+  const btnLabel = {asignado:'Salgo a recoger la carga', a_origen:'Ya cargué · registrar ticket y peso', cargado:'Ya descargué · registrar dónde y peso'};
+
+  return `<div class="intro no-print">Esta es la app que usa cada camionero desde su propio teléfono. Elige tu nombre una vez; tu teléfono lo va a recordar.</div>
+  <div class="phone">
+    <div class="head"><div style="font-size:13px;opacity:.85">ScrapRoute · Chofer</div>
+      <select id="driverSel" aria-label="Chofer">${state.drivers.map(d=>`<option value="${d.id}"${d.id===ui.driverId?' selected':''}>${esc(d.name)} · ${esc(truckName(d.truckId))}</option>`).join('')}</select>
+      <div style="margin-top:8px;font-size:13px">Hoy: ${doneToday.length} viajes · ${fmt(tonsToday)} t entregadas</div></div>
+    <div class="body">
+      ${active.map(t=>`<div class="job"><div class="row" style="justify-content:space-between;align-items:center"><h4>${esc(t.material)} · ${fmt(t.estTons)} t</h4>${pill(t.status)}</div>
+        <div class="note">${fmtDate(t.date)} · ${shortCode(t.id)}</div>
+        <div class="steps" aria-hidden="true">${[0,1,2,3].map(i=>`<i class="${i<=stepIdx[t.status]?'on':''}"></i>`).join('')}</div>
+        <div class="stop"><div class="dotnum">1</div><div><strong>Recoger en</strong><div>${esc(t.originName)}</div><div class="note">${esc(placeAddr(t.originName))}</div><a href="${nav(t.originName)}" target="_blank" rel="noopener">Abrir navegación</a>
+          ${t.originTons!=null?`<div class="note">Cargado: ${fmt(t.originTons)} t · Ticket ${esc(t.originTicket)||'—'}</div>`:''}</div></div>
+        <div class="stop"><div class="dotnum">2</div><div><strong>Descargar en</strong><div>${esc(t.destName)}</div><div class="note">${esc(placeAddr(t.destName))}</div><a href="${nav(t.destName)}" target="_blank" rel="noopener">Abrir navegación</a></div></div>
+        ${t.notes?`<div class="alert">${esc(t.notes).replace(/\n/g,'<br>')}</div>`:''}
+        <button class="btn primary big" data-act="advance" data-id="${t.id}">${btnLabel[t.status]}</button>
+        <div class="row" style="margin-top:8px"><button class="btn small" data-act="problem" data-id="${t.id}">Reportar problema</button></div></div>`).join('') || '<div class="job"><strong>Sin viajes pendientes.</strong><div class="note">Cuando el despacho te asigne un viaje aparecerá aquí.</div></div>'}
+      ${doneToday.length ? `<h3 style="margin:14px 2px 8px;font-size:14px">Entregados hoy</h3>` + doneToday.map(t=>`<div class="job" style="padding:10px"><strong>${esc(t.material)}</strong> · ${fmt(t.destTons)} t<div class="note">${esc(t.originName)} → ${esc(t.destActual||t.destName)}</div></div>`).join('') : ''}
+    </div>
+  </div>`;
+}
+
+/* ---------------- Formularios ---------------- */
+function fieldHtml(f, v){
+  const val = v ?? f.default ?? '';
+  const req = f.required ? ' required' : '';
+  const id = 'f_'+f.name;
+  let ctl;
+  if(f.type==='select') ctl = `<select id="${id}" name="${f.name}"${req}>${f.options.map(o=>`<option value="${esc(o.v)}"${String(o.v)===String(val)?' selected':''}>${esc(o.l)}</option>`).join('')}</select>`;
+  else if(f.type==='textarea') ctl = `<textarea id="${id}" name="${f.name}" rows="2"${req}>${esc(val)}</textarea>`;
+  else ctl = `<input id="${id}" name="${f.name}" type="${f.type||'text'}" value="${esc(val)}"${req}${f.list?` list="${f.list}"`:''}${f.type==='number'?' step="0.01" min="0" inputmode="decimal"':''}${f.placeholder?` placeholder="${esc(f.placeholder)}"`:''} autocomplete="off">`;
+  return `<div${f.half?'':' style="grid-column:1/-1"'}><label for="${id}">${esc(f.label)}</label>${ctl}</div>`;
+}
+function openForm(title, fields, values, onOk, opts={}){
+  const d = $('#dlg');
+  d.innerHTML = `<form id="dform" method="dialog"><h3>${esc(title)}</h3>${opts.sub?`<div class="note">${esc(opts.sub)}</div>`:''}<div class="two-col">${fields.map(f=>fieldHtml(f, values[f.name])).join('')}</div><div class="formerr" id="formerr"></div><div class="row end"><button type="button" class="btn" id="dcancel">Cancelar</button><button class="btn primary" type="submit" id="dsubmit">${esc(opts.ok||'Guardar')}</button></div></form>`;
+  $('#dcancel').onclick = () => d.close();
+  $('#dform').onsubmit = async e => {
+    e.preventDefault();
+    const out = {};
+    fields.forEach(f => { const el = $('#f_'+f.name); out[f.name] = f.type==='number' ? (el.value===''?null:Number(el.value)) : el.value.trim(); });
+    const btn = $('#dsubmit'); btn.disabled = true; btn.textContent='Guardando…';
+    try{ await onOk(out); d.close(); await loadState(); }
+    catch(err){ $('#formerr').textContent = (err && err.message) ? 'No se pudo guardar: '+err.message : 'No se pudo guardar ese cambio.'; btn.disabled=false; btn.textContent = opts.ok||'Guardar'; }
+  };
+  d.showModal();
+}
+const driverOpts = () => state.drivers.map(d=>({v:d.id,l:d.name}));
+const truckOpts = () => state.trucks.map(t=>({v:t.id,l:t.name}));
+
+function tripForm(t){
+  const isNew = !t;
+  if(!state.drivers.length || !state.trucks.length){ alert('Primero agrega al menos un chofer y un camión en Catálogos.'); return; }
+  const v = t || { date:today(), driverId:state.drivers[0]?.id, truckId:state.drivers[0]?.truckId || state.trucks[0]?.id, material:MATERIALS[0], status:'asignado' };
+  const fields = [
+    {name:'date',label:'Fecha',type:'date',required:true,half:true},
+    {name:'material',label:'Material',type:'select',options:MATERIALS.map(m=>({v:m,l:m})),half:true},
+    {name:'driverId',label:'Chofer',type:'select',options:driverOpts(),half:true},
+    {name:'truckId',label:'Camión',type:'select',options:truckOpts(),half:true},
+    {name:'originName',label:'De dónde se recoge (origen)',list:'dl-places',required:true},
+    {name:'destName',label:'Dónde se va a vaciar (destino planificado)',list:'dl-places',required:true},
+    {name:'estTons',label:'Toneladas estimadas',type:'number',half:true},
+    {name:'notes',label:'Notas para el chofer',type:'textarea'}
+  ];
+  if(!isNew) fields.push(
+    {name:'status',label:'Estado',type:'select',options:Object.entries(STATUS).map(([k,x])=>({v:k,l:x[0]})),half:true},
+    {name:'originTicket',label:'Ticket de origen',half:true},
+    {name:'originTons',label:'Toneladas netas en origen',type:'number',half:true},
+    {name:'destActual',label:'Dónde se vació realmente',list:'dl-places',half:true},
+    {name:'destTicket',label:'Ticket de destino',half:true},
+    {name:'destTons',label:'Toneladas netas en destino',type:'number',half:true}
+  );
+  openForm(isNew?'Nuevo viaje':`Editar viaje ${shortCode(t.id)}`, fields, v, async out => {
+    if(isNew) await api('POST','/api/trips',out);
+    else await api('PUT','/api/trips/'+t.id,out);
+  });
+}
+
+/* ---------------- acciones del chofer ---------------- */
+function getPos(){
+  return new Promise(res => {
+    if(!navigator.geolocation) return res(null);
+    navigator.geolocation.getCurrentPosition(p=>res({lat:+p.coords.latitude.toFixed(5), lng:+p.coords.longitude.toFixed(5), at:nowISO()}), ()=>res(null), {timeout:5000, maximumAge:60000});
+  });
+}
+async function stampGeo(id, key){
+  const p = await getPos(); if(!p) return;
+  try{ await api('PUT','/api/trips/'+id, {geo:{[key]:p}}); }catch(e){}
+}
+async function advance(id){
+  const t = byId(state.trips,id); if(!t) return;
+  if(t.status==='asignado'){
+    try{ await api('PUT','/api/trips/'+id, {status:'a_origen'}); stampGeo(id,'start'); await loadState(); }catch(e){ alert('No se pudo guardar: '+e.message); }
+  } else if(t.status==='a_origen'){
+    openForm('Carga en origen', [
+      {name:'originTicket',label:'Número de ticket de báscula',required:true,half:true},
+      {name:'originTons',label:'Toneladas netas',type:'number',required:true,half:true}
+    ], {}, async out => { await api('PUT','/api/trips/'+id, Object.assign({status:'cargado'}, out)); stampGeo(id,'load'); }, {ok:'Confirmar carga', sub:`${t.material} · ${t.originName}`});
+  } else if(t.status==='cargado'){
+    openForm('Descarga', [
+      {name:'destActual',label:'¿Dónde vaciaste?',list:'dl-places',required:true},
+      {name:'destTicket',label:'Ticket de báscula',required:true,half:true},
+      {name:'destTons',label:'Toneladas netas',type:'number',required:true,half:true}
+    ], {destActual:t.destName}, async out => { await api('PUT','/api/trips/'+id, Object.assign({status:'descargado'}, out)); stampGeo(id,'dump'); }, {ok:'Confirmar descarga', sub:`Planificado: ${t.destName}. Si vaciaste en otro lugar, cámbialo.`});
+  }
+}
+function problem(id){
+  const t = byId(state.trips,id); if(!t) return;
+  openForm('Reportar problema', [{name:'note',label:'¿Qué pasó? (cola larga, carga rechazada, avería…)',type:'textarea',required:true}], {}, async out => {
+    const notes = (t.notes ? t.notes+'\n' : '') + `[${new Date().toLocaleString('es-US')}] Chofer: ${out.note}`;
+    await api('PUT','/api/trips/'+id, {notes});
+  }, {ok:'Enviar al despacho'});
+}
+
+/* ---------------- exportar (descarga normal del navegador) ---------------- */
+function downloadFile(filename, content, mime){
+  const blob = new Blob([content], {type:mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function exportCSV(){
+  const rows = filteredTrips();
+  const head = ['ID','Fecha','Chofer','Camión','Material','Origen','Destino planificado','Destino real','Ton estimadas','Ticket origen','Ton origen','Ticket destino','Ton destino','Diferencia %','Estado','Notas'];
+  const q = v => '"'+String(v??'').replace(/"/g,'""')+'"';
+  const lines = [head.map(q).join(',')].concat(rows.map(t=>[shortCode(t.id),t.date,driverName(t.driverId),truckName(t.truckId),t.material,t.originName,t.destName,t.destActual,t.estTons,t.originTicket,t.originTons,t.destTicket,t.destTons,diffPct(t)==null?'':Math.round(diffPct(t)*100)/100,STATUS[t.status][0],t.notes].map(q).join(',')));
+  downloadFile(`viajes_scrap_${today()}.csv`, '﻿'+lines.join('\r\n'), 'text/csv;charset=utf-8');
+}
+function exportJSON(){
+  downloadFile(`scraproute_respaldo_${today()}.json`, JSON.stringify(state, null, 2), 'application/json');
+}
+
+/* ---------------- eventos ---------------- */
+document.addEventListener('click', async e => {
+  const nb = e.target.closest('#nav button'); if(nb){ ui.tab = nb.dataset.tab; location.hash = ui.tab; render(); return; }
+  const pb = e.target.closest('[data-period]'); if(pb){ ui.period = pb.dataset.period; render(); return; }
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  e.preventDefault();
+  const id = b.dataset.id;
+  try{
+    switch(b.dataset.act){
+      case 'print': window.print(); break;
+      case 'csv': exportCSV(); break;
+      case 'backup': exportJSON(); break;
+      case 'newTrip': tripForm(null); break;
+      case 'editTrip': tripForm(byId(state.trips,id)); break;
+      case 'delTrip': if(confirm('¿Borrar este viaje?')){ await api('DELETE','/api/trips/'+id); await loadState(); } break;
+      case 'advance': advance(id); break;
+      case 'problem': problem(id); break;
+      case 'editGoal': openForm('Meta semanal', [{name:'w',label:'Toneladas por semana',type:'number',required:true}], {w:state.goal.weeklyTons}, async o=>{ await api('PUT','/api/goal',{weeklyTons:o.w}); }); break;
+      case 'newDriver': case 'editDriver': {
+        const d = b.dataset.act==='editDriver' ? byId(state.drivers,id) : null;
+        openForm(d?'Editar chofer':'Nuevo chofer', [{name:'name',label:'Nombre',required:true},{name:'phone',label:'Teléfono',type:'tel'},{name:'truckId',label:'Camión asignado',type:'select',options:[{v:'',l:'— ninguno —'}].concat(truckOpts())}], d||{}, async o=>{ if(d) await api('PUT','/api/drivers/'+id,o); else await api('POST','/api/drivers',o); });
+        break; }
+      case 'delDriver': if(confirm('¿Borrar este chofer? Sus viajes se conservan en el historial.')){ await api('DELETE','/api/drivers/'+id); await loadState(); } break;
+      case 'newTruck': case 'editTruck': {
+        const t = b.dataset.act==='editTruck' ? byId(state.trucks,id) : null;
+        openForm(t?'Editar camión':'Nuevo camión', [{name:'name',label:'Nombre (ej. Camión 3)',required:true},{name:'plate',label:'Placa'},{name:'type',label:'Tipo de trailer (dump, walking floor, roll-off…)'}], t||{}, async o=>{ if(t) await api('PUT','/api/trucks/'+id,o); else await api('POST','/api/trucks',o); });
+        break; }
+      case 'delTruck': if(confirm('¿Borrar este camión?')){ await api('DELETE','/api/trucks/'+id); await loadState(); } break;
+      case 'newPlace': case 'editPlace': {
+        const p = b.dataset.act==='editPlace' ? byId(state.places,id) : null;
+        openForm(p?'Editar lugar':'Nuevo lugar', [{name:'name',label:'Nombre',required:true},{name:'address',label:'Dirección (para la navegación)'},{name:'kind',label:'Tipo',type:'select',options:[{v:'origen',l:'Origen (cliente)'},{v:'destino',l:'Destino (patio / acería)'},{v:'ambos',l:'Ambos'}]}], p||{kind:'destino'}, async o=>{ if(p) await api('PUT','/api/places/'+id,o); else await api('POST','/api/places',o); });
+        break; }
+      case 'delPlace': if(confirm('¿Borrar este lugar de la lista? Los viajes ya registrados no cambian.')){ await api('DELETE','/api/places/'+id); await loadState(); } break;
+      case 'wipe': if(confirm('Esto borra TODOS los viajes, choferes, camiones y lugares para siempre. ¿Seguro?')){ await api('DELETE','/api/all'); await loadState(); } break;
+    }
+  }catch(err){ if(err.message !== 'sesión requerida') alert('No se pudo completar la acción: '+err.message); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if(t.id==='fDriver'){ ui.fDriver=t.value; render(); }
+  else if(t.id==='fMat'){ ui.fMat=t.value; render(); }
+  else if(t.id==='fStatus'){ ui.fStatus=t.value; render(); }
+  else if(t.id==='driverSel'){ ui.driverId=t.value; safeSet('scrapRoute.myDriverId', t.value); render(); }
+  else if(t.id==='pFrom'){ ui.from=t.value; render(); }
+  else if(t.id==='pTo'){ ui.to=t.value; render(); }
+});
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if(['panel','viajes','chofer','catalogos'].includes(h) && h!==ui.tab){ ui.tab=h; render(); } });
+
+render();
+checkSession();
+</script>
+</body>
+</html>
