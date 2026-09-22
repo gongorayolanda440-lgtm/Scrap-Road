@@ -1,4 +1,4 @@
-// Góngora Transport — servidor Express + PostgreSQL
+// Góngora Transport Inc. — servidor Express + PostgreSQL
 // Sirve la app y una API sencilla que todos los dispositivos consultan
 // (despacho y choferes), para que todos vean los mismos datos.
 
@@ -252,7 +252,7 @@ app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.ht
 
 migrate()
   .then(() => {
-    app.listen(PORT, () => console.log('Góngora Transport escuchando en el puerto ' + PORT));
+    app.listen(PORT, () => console.log('Góngora Transport Inc. escuchando en el puerto ' + PORT));
   })
   .catch((e) => {
     console.error('No se pudo preparar la base de datos:', e);

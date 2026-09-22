@@ -3,33 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Góngora Transport</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%230958FF'/%3E%3Crect x='6' y='15' width='23' height='17' rx='2' fill='white'/%3E%3Cpath d='M29 21h9.5c.6 0 1.2.3 1.6.8l4.4 5.6c.3.4.5.9.5 1.4V32h-16V21z' fill='white'/%3E%3Ccircle cx='16' cy='35' r='4.2' fill='white'/%3E%3Ccircle cx='37' cy='35' r='4.2' fill='white'/%3E%3C/svg%3E">
+<title>Góngora Transport Inc.</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%23EA1B23'/%3E%3Crect x='6' y='15' width='23' height='17' rx='2' fill='white'/%3E%3Cpath d='M29 21h9.5c.6 0 1.2.3 1.6.8l4.4 5.6c.3.4.5.9.5 1.4V32h-16V21z' fill='white'/%3E%3Ccircle cx='16' cy='35' r='4.2' fill='white'/%3E%3Ccircle cx='37' cy='35' r='4.2' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700;800&display=swap">
 <style>
 :root{
-  --bg:#f4f6fb; --surface:#ffffff; --surface-2:#e9eefc; --border:#d7dcec;
-  --ink:#131b2b; --muted:#5b6478;
-  --accent:#0958ff; --accent-ink:#ffffff; --accent-soft:#e4ecff;
+  --bg:#faf7f6; --surface:#ffffff; --surface-2:#f3ecec; --border:#e3d9d9;
+  --ink:#241416; --muted:#6b5a5c;
+  --accent:#ea1b23; --accent-ink:#ffffff; --accent-soft:#fde3e2;
   --info:#6d4fd6; --info-soft:#efe9fb;
   --warn:#a15c07; --warn-soft:#fbeed9;
   --ok:#1a7a3e; --ok-soft:#e2f5e7;
   --bad:#b3261e; --bad-soft:#fbe7e5;
-  --chart:#00b4d8;
-  --shadow:0 1px 2px rgba(10,20,40,.07), 0 1px 1px rgba(10,20,40,.04);
+  --chart:#f2b705;
+  --shadow:0 1px 2px rgba(40,10,10,.07), 0 1px 1px rgba(40,10,10,.04);
   color-scheme: light dark;
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --bg:#0b1220; --surface:#121b2e; --surface-2:#182338; --border:#28344c;
-    --ink:#e8edfb; --muted:#96a1c2;
-    --accent:#5b8dff; --accent-ink:#071229; --accent-soft:#182a52;
+    --bg:#1a0f10; --surface:#241617; --surface-2:#2d1b1c; --border:#42292b;
+    --ink:#f5e9ea; --muted:#c2a3a5;
+    --accent:#ff4d4f; --accent-ink:#2a0506; --accent-soft:#3a1418;
     --info:#b9a4ff; --info-soft:#241a45;
     --warn:#f0b35a; --warn-soft:#3a2a12;
     --ok:#6fdb95; --ok-soft:#123425;
     --bad:#ff8f86; --bad-soft:#3d1e1b;
-    --chart:#4dd8f0;
+    --chart:#ffd166;
     --shadow:0 1px 2px rgba(0,0,0,.4);
   }
 }
@@ -143,7 +143,7 @@ dialog::backdrop{background:rgba(10,15,12,.5)}
 
 <div id="loginScreen" hidden>
   <div class="card">
-    <h2 style="margin-bottom:4px">Góngora Transport</h2>
+    <h2 style="margin-bottom:4px">Góngora Transport Inc.</h2>
     <p class="note" style="margin:0 0 14px">Escribe la contraseña del equipo para entrar.</p>
     <form id="loginForm">
       <label for="pw">Contraseña</label>
@@ -156,7 +156,7 @@ dialog::backdrop{background:rgba(10,15,12,.5)}
 
 <header class="top">
   <div class="wrap bar">
-    <div class="brand"><div class="mark" aria-hidden="true"><svg viewBox="0 0 48 48" width="20" height="20"><rect x="4" y="13" width="23" height="17" rx="2" fill="currentColor"/><path d="M27 19h9.5c.6 0 1.2.3 1.6.8l4.4 5.6c.3.4.5.9.5 1.4V30h-16V19z" fill="currentColor"/><circle cx="14" cy="33" r="4.2" fill="currentColor"/><circle cx="35" cy="33" r="4.2" fill="currentColor"/></svg></div><div class="wordmark">Góngora <b>Transport</b></div></div>
+    <div class="brand"><div class="mark" aria-hidden="true"><svg viewBox="0 0 48 48" width="20" height="20"><rect x="4" y="13" width="23" height="17" rx="2" fill="currentColor"/><path d="M27 19h9.5c.6 0 1.2.3 1.6.8l4.4 5.6c.3.4.5.9.5 1.4V30h-16V19z" fill="currentColor"/><circle cx="14" cy="33" r="4.2" fill="currentColor"/><circle cx="35" cy="33" r="4.2" fill="currentColor"/></svg></div><div class="wordmark">Góngora <b>Transport Inc.</b></div></div>
     <nav id="nav" aria-label="Secciones">
       <button data-tab="panel">Panel</button>
       <button data-tab="viajes">Viajes</button>
@@ -447,7 +447,7 @@ function renderDriverApp(){
 
   return `<div class="intro no-print">Esta es la app que usa cada camionero desde su propio teléfono. Elige tu nombre una vez; tu teléfono lo va a recordar.</div>
   <div class="phone">
-    <div class="head"><div style="font-size:13px;opacity:.85">Góngora Transport · Chofer</div>
+    <div class="head"><div style="font-size:13px;opacity:.85">Góngora Transport Inc. · Chofer</div>
       <select id="driverSel" aria-label="Chofer">${state.drivers.map(d=>`<option value="${d.id}"${d.id===ui.driverId?' selected':''}>${esc(d.name)} · ${esc(truckName(d.truckId))}</option>`).join('')}</select>
       <div style="margin-top:8px;font-size:13px">Hoy: ${doneToday.length} viajes · ${fmt(tonsToday)} t entregadas</div></div>
     <div class="body">

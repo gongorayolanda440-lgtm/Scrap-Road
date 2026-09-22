@@ -1,4 +1,4 @@
-# Góngora Transport — despacho, control de material y app del chofer
+# Góngora Transport Inc. — despacho, control de material y app del chofer
 
 App web con servidor propio (Node.js + Express) y base de datos PostgreSQL,
 desplegada en [Render](https://render.com). Todos los que abran la
