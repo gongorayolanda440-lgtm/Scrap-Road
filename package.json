@@ -1,8 +1,8 @@
 {
-  "name": "scraproute",
+  "name": "gongora-transport",
   "version": "1.0.0",
   "private": true,
-  "description": "Despacho de camiones y app del chofer para acarreo de scrap",
+  "description": "Góngora Transport — despacho de camiones y app del chofer para acarreo de scrap",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

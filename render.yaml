@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: scraproute
+    name: gongora-transport
     runtime: node
     plan: free
     buildCommand: npm install
@@ -10,11 +10,11 @@ services:
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: scraproute-db
+          name: gongora-transport-db
           property: connectionString
       - key: APP_PASSWORD
         sync: false
 
 databases:
-  - name: scraproute-db
+  - name: gongora-transport-db
     plan: free

@@ -1,52 +1,34 @@
-# ScrapRoute — despacho, control de material y app del chofer
+# Góngora Transport — despacho, control de material y app del chofer
 
 App web con servidor propio (Node.js + Express) y base de datos PostgreSQL,
-para desplegar en [Render](https://render.com). Todos los que abran la
+desplegada en [Render](https://render.com). Todos los que abran la
 dirección web (despacho y choferes) ven los mismos datos, actualizados
 cada pocos segundos.
 
-## 1. Subir este proyecto a GitHub
+Repositorio: https://github.com/gongorayolanda440-lgtm/Scrap-Road
 
-Desde esta carpeta (`scraproute-server`):
+## Variables de entorno que necesita el servicio en Render
+
+| Variable | Valor |
+|---|---|
+| `DATABASE_URL` | La "Internal Database URL" de la base de datos PostgreSQL de Render |
+| `APP_PASSWORD` | La contraseña compartida que usan tú y tus choferes para entrar |
+| `NODE_ENV` | `production` |
+
+Se configuran en el servicio web, en la pestaña **Environment** del dashboard de Render.
+
+## Actualizar la app después de un cambio
+
+Desde esta carpeta:
 
 ```bash
-git init
 git add .
-git commit -m "ScrapRoute: primera version"
-git branch -M main
-git remote add origin https://github.com/TU-USUARIO/scraproute.git
-git push -u origin main
+git commit -m "describe aquí el cambio"
+git push
 ```
 
-(Crea antes un repositorio vacío en GitHub, sin README, y usa esa URL.)
-
-## 2. Desplegar en Render con un clic (Blueprint)
-
-Este proyecto incluye `render.yaml`, que crea a la vez:
-- el servicio web (plan **Free**)
-- una base de datos PostgreSQL (plan **Free**, expira a los 30 días si no la subes de plan — haz un respaldo antes con el botón "Descargar todo (JSON)" de la app, o cambia el plan de la base de datos en Render antes de esa fecha)
-
-Pasos:
-1. En el dashboard de Render: **New +** → **Blueprint**.
-2. Elige el repositorio de GitHub que acabas de crear.
-3. Render detecta `render.yaml` y te va a pedir el valor de `APP_PASSWORD`
-   (la contraseña que van a usar tú y tus choferes para entrar). Escribe una y confirma.
-4. Espera a que termine el primer *deploy* (unos 2-3 minutos).
-5. Abre la URL que te da Render (algo como `https://scraproute.onrender.com`).
-
-## 3. Desplegar a mano, sin Blueprint (alternativa)
-
-Si prefieres no usar `render.yaml`:
-1. **New +** → **PostgreSQL** → plan Free → crea la base de datos y copia su
-   "Internal Database URL".
-2. **New +** → **Web Service** → conecta el mismo repositorio.
-   - Build command: `npm install`
-   - Start command: `npm start`
-   - Variables de entorno:
-     - `DATABASE_URL` = la URL que copiaste en el paso 1
-     - `APP_PASSWORD` = la contraseña del equipo
-     - `NODE_ENV` = `production`
-3. Crea el servicio y espera el deploy.
+Render detecta el `push` a la rama `main` y vuelve a desplegar solo, sin nada
+más que hacer.
 
 ## Notas importantes
 
@@ -60,7 +42,7 @@ Si prefieres no usar `render.yaml`:
 - **Contraseña compartida**: por ahora todos (tú y tus choferes) usan la
   misma contraseña, sin cuentas individuales. Si más adelante quieres una
   contraseña por chofer, o quitar la contraseña y usar solo el enlace,
-  dímelo y lo ajustamos.
-- Para actualizar la app después de un cambio: vuelve a hacer
-  `git add . && git commit -m "..." && git push`; Render vuelve a desplegar
-  solo.
+  se puede ajustar.
+- `render.yaml` queda en el proyecto por si algún día quieres recrear todo
+  desde cero con un Blueprint (crea el servicio web y la base de datos juntos),
+  pero el servicio ya desplegado se sigue actualizando con un simple `git push`.
